@@ -4,7 +4,7 @@ Hardware & SDK Requirements
 ---------------------------
 
 -   IDE - [Simplicity Studio 4](http://www.silabs.com/products/mcu/Pages/simplicity-studio.aspx)
--   SDK - Silicon Labs Bluetooth Mesh SDK 1.x GA. Texted on both 1.4 and 1.6.3. May need API changes to work with Mesh SDK 2.x.
+-   SDK - Silicon Labs Bluetooth Mesh SDK 1.x GA. Tested on both 1.4 and 1.6.3. May need API changes to work with Mesh SDK 2.x.
 -   NCP target - At least 1 Bluetooth Mesh compatible boards - EFR32xG12, EFR32xG13 or EFR32xG21 (x= M, B) based, SLWRB4104A and SLWRB4103A are recommended.
 -   NCP host - **POSIX compatible** machine to run the host application. Running the application on Windows needs some porting effort, this has only been tested with Linux, Cygwin, and Mac.
 
