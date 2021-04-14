@@ -38,7 +38,8 @@ A simple console is implemented to receive commands from user. Users can add any
          * Generic OnOff Client
          * Light Lightness Client
          * Light CTL Client
-    4. Modify the *Features Bitmask* to 0x000b, then click "Generate" button.
+    4. Modify the *Features Bitmask* to 0x000b.
+    5. Click the "Generate" button to generate these changes to source.
 3.  If the NCP target needs to sleep, you need to make the changes in steps 4 and 5 below to the project. The provided example **DOES NOT** enable the sleep mode. If you don't need to enable sleep mode in the NCP target, skip to step 6.
 4.  Add below code right before while(1) in main.c:
 
@@ -53,7 +54,7 @@ A simple console is implemented to receive commands from user. Users can add any
 ```
 
 5.  Open the hal-config.h file and define the symbol *NCP_DEEP_SLEEP_ENABLED*. After that, you need to specify the wake up pin location to the symbols *NCP_WAKEUP_PORT*, *NCP_WAKEUP_PIN* and *NCP_WAKEUP_POLARITY*. The same rule applies to the symbol *NCP_HOST_WAKEUP_ENABLED* if you want the NCP target could wakeup the host.
-6.  Erase the attached board, then build and program to it.
+6.  Build the project then erase and flash to the attached board.
 
 ### Run the example
 
