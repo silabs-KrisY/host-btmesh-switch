@@ -29,17 +29,17 @@ A simple console is implemented to receive commands from user. Users can add any
 ### Generate NCP target
 
 1.  Create "NCP - Mesh Empty Target" project based on the attached board and the latest Bluetooth Mesh SDK.
-2.  We need to make theDCD (device configuration data) of our NCP firmware look like soc-btmesh-switch so the reference mobile app will configure it properly.
-   1. Open the ${projectname}.isc file.
-   2. Remove the second element if present.
-   3. Make sure the first element has the following models:
+2.  We need to make the DCD (device configuration data) of our NCP firmware look like soc-btmesh-switch so the reference mobile app will configure it properly.
+    1. Open the ${projectname}.isc file.
+    2. Remove the second element if present.
+    3. Make sure the first element has the following models:
          * Configuration Server
          * Health Server
          * Generic OnOff Client
          * Light Lightness Client
          * Light CTL Client
     4. Modify the *Features Bitmask* to 0x000b, then click "Generate" button.
-3.  If the NCP target needs to sleep, you need to make step 4-5 changes to the project. The provided example **DOESN'T** enable the sleep mode.
+3.  If the NCP target needs to sleep, you need to make the changes in steps 4 and 5 below to the project. The provided example **DOES NOT** enable the sleep mode. If you don't need to enable sleep mode in the NCP target, skip to step 6.
 4.  Add below code right before while(1) in main.c:
 
 ```
@@ -52,8 +52,8 @@ A simple console is implemented to receive commands from user. Users can add any
 
 ```
 
-1.  Open the hal-config.h file and define the symbol *NCP_DEEP_SLEEP_ENABLED*. After that, you need to specify the wake up pin location to the symbols *NCP_WAKEUP_PORT*, *NCP_WAKEUP_PIN* and *NCP_WAKEUP_POLARITY*. The same rule applies to the symbol *NCP_HOST_WAKEUP_ENABLED* if you want the NCP target could wakeup the host.
-2.  Erase the attached board, then build and program to it.
+5.  Open the hal-config.h file and define the symbol *NCP_DEEP_SLEEP_ENABLED*. After that, you need to specify the wake up pin location to the symbols *NCP_WAKEUP_PORT*, *NCP_WAKEUP_PIN* and *NCP_WAKEUP_POLARITY*. The same rule applies to the symbol *NCP_HOST_WAKEUP_ENABLED* if you want the NCP target could wakeup the host.
+6.  Erase the attached board, then build and program to it.
 
 ### Run the example
 
