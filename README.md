@@ -1,17 +1,71 @@
-This example duplicates the functionalities of the SDK example - soc-btmesh-switch with NCP mode, instead of controlling the light by the push buttons on the WSTK, it implements a lightweight console, so that you can use the CLI to control the lights in the network. For more information about the ncp mode and ncp host and target, please go through [KBA_BT_1602: NCP Host Implementation and Example](https://www.silabs.com/community/wireless/bluetooth/knowledge-base.entry.html/2018/01/18/ncp_host_implementat-PEsT).
+This example duplicates the functionalities of the SDK example - soc-btmesh-switch with NCP (Network Co-Processor) mode, instead of controlling the light by the push buttons on the WSTK, it implements a lightweight console, so that you can use the CLI to control the lights in the network. For more information about the ncp mode and ncp host and target, please go through [KBA_BT_1602: NCP Host Implementation and Example](https://www.silabs.com/community/wireless/bluetooth/knowledge-base.entry.html/2018/01/18/ncp_host_implementat-PEsT).
 
-Hardware & SDK Requirements
----------------------------
+# Getting Started
 
--   IDE - [Simplicity Studio 4](http://www.silabs.com/products/mcu/Pages/simplicity-studio.aspx)
--   SDK - Silicon Labs Bluetooth Mesh SDK 1.x GA. Tested on both 1.4 and 1.6.3. May need API changes to work with Mesh SDK 2.x.
--   NCP target - At least 1 Bluetooth Mesh compatible boards - EFR32xG12, EFR32xG13 or EFR32xG21 (x= M, B) based, SLWRB4104A and SLWRB4103A are recommended.
--   NCP host - **POSIX compatible** machine to run the host application. Running the application on Windows needs some porting effort, this has only been tested with Linux, Cygwin, and Mac.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-How to Use It
--------------
+### Prerequisites
 
-The NCP mode requires both the host and target to work.
+1. IDE - [Simplicity Studio 5](http://www.silabs.com/products/mcu/Pages/simplicity-studio.aspx). This is required to download the SDK and to build the required NCP firmware image.
+2. Gecko SDK Suite 3.2 with Silicon Labs Bluetooth Mesh SDK 2.x installed. Tested on Gecko SDK Suite 3/.2/Bluetooth Mesh SDK 2.1.4. NOTE: This version is no longer compatible with Gecko SDK Suite 2.x/Simplicity Studio v4/Bluetooth Mesh SDK 1.x. For Bluetooth Mesh 1.x support, revert to the v1.0 tag on this repo.
+3. Linux/Posix build environment (OSX, Cygwin, Raspberry Pi, etc.).
+4. Bluetooth Mesh compatible Blue Gecko / Mighty Gecko device running a serial UART Bluetooth Mesh NCP (Network Co-Processor) firmware image. Bluetooth Mesh compatible devices are EFR32xG12, EFR32xG13 or EFR32xG21 (x= M, B) based. See the "To Run" section below for more details.
+
+### Installing
+
+This project can be built as supplied within the Blue Gecko SDK frameworks.
+
+#### For Cygwin/OSX/Linux with SDK installed
+
+Clone or copy the contents of this repository into the Blue Gecko SDK, into a subfolder of app/bluetooth/example_host. Commands shown here are from OSX using Gecko SDK Suite v3.2, but will be similar in Linux/Cygwin. Make sure you have the Bluetooth Mesh SDK installed within your Gecko SDK Suite.
+
+```
+$ cd /Applications/Simplicity Studio.app/Contents/Eclipse/developer/sdks/gecko_sdk_suite/v3.2/app/bluetooth/example_host/
+$ git clone https://github.com/kryoung-silabs/host-btmesh-switch.git
+$ cd host-btmesh-switch
+$ make
+```
+
+#### For Raspberry Pi
+
+1. On the PC with the Gecko SDK installed, create a compressed file archive containing the required SDK source files (command line example here on OS X using Gecko SDK Suite v3.2).
+
+```
+$ cd Applications/Simplicity Studio.app/Contents/Eclipse/developer/sdks/gecko_sdk_suite/v3.2
+$ tar -cvf ble_3p2.tgz "app/bluetooth/component_host" "app/bluetooth/common_host" "platform/common/inc" "protocol/bluetooth/inc" "protocol/bluetooth/src" "app/common/util/app_log" "app/common/util/app_assert"
+```
+
+You can also create a zip archive including the same files/paths using your favorite Windows Zip tool (7zip, etc.). Make sure you preserve paths relative to the Gecko SDK root when creating the archive!
+
+2. Transfer archive to Raspberry Pi, extract, clone, cd to the new directory, and make. Note that the SDK root directory can be specified on the make command line via the SDK_DIR parameter.
+
+```
+$ mkdir ble_3p2
+$ tar -xvf ble_3p2.tgz
+$ git clone https://github.com/kryoung-silabs/host-btmesh-switch.git
+$ cd host-btmesh-switch
+$ make SDK_DIR=..
+```
+
+If using a zip archive with preserved paths relative to the Gecko SDK root, the extraction process is as follows:
+```
+$ mkdir ble_3p2
+$ unzip ble_3p2.zip -d ble_3p2
+```
+
+#### To Run
+### Generate NCP target
+
+1.  Create "Bluetooth Mesh - NCP Empty" project based on the attached board and the latest Bluetooth Mesh SDK.
+2.  The default configuration of this project in the latest SDK (2.1.4 as of this writing) contains the models and settings needed to run this example. Just build and flash to the target.
+
+### Run the example
+
+-   Download the attachment and extract it.
+-   cd to the folder and run "make SDK_DIR=xxx", where xxx is the real directory of your BT Mesh SDK. Assuming it builds without errors.
+-   The executable takes 2 parameters - serial port and baud rate. Run it as "sudo ./exe/switch /dev/ttyACM2 115200"
+-   If the shell starts normally, type "h" to get usage example
+-   Find a provisioner and light node to test it.
 
 ### Supported Commands
 
@@ -26,40 +80,19 @@ A simple console is implemented to receive commands from user. Users can add any
 | h | h | Print usage |
 | exit | exit | Exit program |
 
-### Generate NCP target
+## Support
 
-1.  Create "NCP - Mesh Empty Target" project based on the attached board and the latest Bluetooth Mesh SDK.
-2.  We need to make the DCD (device configuration data) of our NCP firmware look like soc-btmesh-switch so the reference mobile app will configure it properly.
-    1. Open the ${projectname}.isc file.
-    2. Remove the second element if present.
-    3. Make sure the first element has the following models:
-         * Configuration Server
-         * Health Server
-         * Generic OnOff Client
-         * Light Lightness Client
-         * Light CTL Client
-    4. Modify the *Features Bitmask* to 0x000b.
-    5. Click the "Generate" button to generate these changes to source.
-3.  If the NCP target needs to sleep, you need to make the changes in steps 4 and 5 below to the project. The provided example **DOES NOT** enable the sleep mode. If you don't need to enable sleep mode in the NCP target, skip to step 6.
-4.  Add below code right before while(1) in main.c:
+I am a Field Applications Engineer for Silicon Labs, not a full time software developer, so I've created this application in my "spare time" to provide an example for Silicon Labs customers to use to bring up their hardware, do some testing, and perhaps form as the basis to extend with additional functionality. If needed, I can provide limited support for this specific software via email <<kris.young@silabs.com>>. For support on building NCP firmware images, bringing up NCP firmware, and building target firmware images using examples under Simplicity Studio, please obtain support through the [official Silicon Labs support portal](http://silabs.com/support).
 
-```
-#if defined(_SILICON_LABS_32B_SERIES_1_CONFIG_3)
-  /* xG13 devices have two RTCCs, one for the stack and another for the application.
-     * The clock for RTCC needs to be enabled in application code. In xG12 RTCC init
-     * is handled by the stack */
-  CMU_ClockEnable(cmuClock_RTCC, true);
-#endif
+## Versioning
 
-```
+I plan to use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/host-thermometer-client/tags). All notable changes to this project will be documented in [CHANGELOG.md](CHANGELOG.md).
 
-5.  Open the hal-config.h file and define the symbol *NCP_DEEP_SLEEP_ENABLED*. After that, you need to specify the wake up pin location to the symbols *NCP_WAKEUP_PORT*, *NCP_WAKEUP_PIN* and *NCP_WAKEUP_POLARITY*. The same rule applies to the symbol *NCP_HOST_WAKEUP_ENABLED* if you want the NCP target could wakeup the host.
-6.  Build the project then erase and flash to the attached board.
+## Authors
 
-### Run the example
+* **Kevin Fu** - *Initial work* [Kevin Fu]()
+* **Kris Young** - *Docs and Mesh 2.x Migration* - [Kris Young](https://github.com/kryoung-silabs) <<kris.young@silabs.com>>
 
--   Download the attachment and extract it.
--   cd to the folder and run "make SDK_DIR=xxx", where xxx is the real directory of your BT Mesh SDK. Assuming it builds without errors.
--   The executable takes 2 parameters - serial port and baud rate. Run it as "sudo ./exe/switch /dev/ttyACM2 115200"
--   If the shell starts normally, type "h" to get usage example
--   Find a provisioner and light node to test it.
+## License
+
+This AS-IS example project is licensed under Zlib by Silicon Laboratories Inc. See the [LICENSE.md](LICENSE.md) file for details
