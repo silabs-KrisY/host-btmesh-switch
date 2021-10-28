@@ -53,13 +53,13 @@ $ mkdir ble_3p2
 $ unzip ble_3p2.zip -d ble_3p2
 ```
 
-#### To Run
-### Generate NCP target
+### To Run
+#### Generate NCP target
 
 1.  Create "Bluetooth Mesh - NCP Empty" project based on the attached board and the latest Bluetooth Mesh SDK.
 2.  The default configuration of this project in the latest SDK (2.1.4 as of this writing) contains the models and settings needed to run this example. Just build and flash to the target.
 
-### Run the example
+#### Run the example
 
 -   Download the attachment and extract it.
 -   cd to the folder and run "make SDK_DIR=xxx", where xxx is the real directory of your BT Mesh SDK. Assuming it builds without errors.
@@ -67,7 +67,7 @@ $ unzip ble_3p2.zip -d ble_3p2
 -   If the shell starts normally, type "h" to get usage example
 -   Find a provisioner and light node to test it.
 
-### Supported Commands
+#### Supported Commands
 
 A simple console is implemented to receive commands from user. Users can add any customized command by adding an new item to the *CMDs* array in app.c.
 
