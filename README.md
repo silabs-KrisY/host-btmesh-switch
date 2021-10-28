@@ -21,7 +21,7 @@ Clone or copy the contents of this repository into the Blue Gecko SDK, into a su
 
 ```
 $ cd /Applications/Simplicity Studio.app/Contents/Eclipse/developer/sdks/gecko_sdk_suite/v3.2/app/bluetooth/example_host/
-$ git clone https://github.com/kryoung-silabs/host-btmesh-switch.git
+$ git clone https://github.com/silabs-KrisY/host-btmesh-switch.git
 $ cd host-btmesh-switch
 $ make
 ```
@@ -42,7 +42,7 @@ You can also create a zip archive including the same files/paths using your favo
 ```
 $ mkdir ble_3p2
 $ tar -xvf ble_3p2.tgz
-$ git clone https://github.com/kryoung-silabs/host-btmesh-switch.git
+$ git clone https://github.com/silabs-KrisY/host-btmesh-switch.git
 $ cd host-btmesh-switch
 $ make SDK_DIR=..
 ```
@@ -90,8 +90,8 @@ I plan to use [SemVer](http://semver.org/) for versioning. For the versions avai
 
 ## Authors
 
-* **Kevin Fu** - *Initial work* [Kevin Fu]()
-* **Kris Young** - *Docs and Mesh 2.x Migration* - [Kris Young](https://github.com/kryoung-silabs) <<kris.young@silabs.com>>
+* **Kevin Fu** - *Initial work* [Kevin Fu](https://github.com/silabs-kevin)
+* **Kris Young** - *Docs and Mesh 2.x Migration* - [Kris Young](https://github.com/silabs-KrisY) <<kris.young@silabs.com>>
 
 ## License
 
