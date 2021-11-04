@@ -41,7 +41,7 @@ You can also create a zip archive including the same files/paths using your favo
 
 ```
 $ mkdir ble_3p2
-$ tar -xvf ble_3p2.tgz
+$ tar -xvf ble_3p2.tgz -C ble_3p2
 $ git clone https://github.com/silabs-KrisY/host-btmesh-switch.git
 $ cd host-btmesh-switch
 $ make SDK_DIR=..
