@@ -125,7 +125,7 @@ sl_status_t mesh_lib_init(size_t initial_num, size_t increment)
 void mesh_lib_deinit(void)
 {
   if (registry.entries != NULL) {
-    sl_free(registry.entries);
+    free(registry.entries);
     registry.entries = NULL;
     registry.length = 0;
     registry.index = 0;
