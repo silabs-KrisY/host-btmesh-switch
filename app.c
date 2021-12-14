@@ -523,8 +523,6 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
       }
       break;
 
-
-
       case sl_bt_evt_system_soft_timer_id:
         //CS_OUTPUT("soft_timer\n");
         switch (evt->data.evt_system_soft_timer.handle) {
@@ -572,8 +570,6 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
 
         break;
 
-
-
       case sl_bt_evt_connection_opened_id:
         CS_OUTPUT("evt:sl_bt_evt_connection_opened_id\r\n");
         num_connections++;
@@ -593,8 +589,6 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
           }
         }
         break;
-
-
 
       case sl_bt_evt_connection_parameters_id:
         CS_OUTPUT("connection params: interval %d, timeout %d\r\n",
@@ -618,116 +612,116 @@ void sl_btmesh_on_event(sl_btmesh_msg_t *evt)
   sl_status_t sc;
 
     switch (SL_BGAPI_MSG_ID(evt->header)) {
-  case sl_btmesh_evt_node_initialized_id:
-  {
-    CS_OUTPUT("node initialized\r\n");
+      case sl_btmesh_evt_node_initialized_id:
+        {
+          CS_OUTPUT("node initialized\r\n");
 
-    // Initialize generic client models
-    sc = sl_btmesh_generic_client_init();
-    app_assert_status(sc);
-    struct sl_btmesh_evt_node_initialized_s *pData = (struct sl_btmesh_evt_node_initialized_s *)&(evt->data);
+          // Initialize generic client models
+          sc = sl_btmesh_generic_client_init();
+          app_assert_status(sc);
+          struct sl_btmesh_evt_node_initialized_s *pData = (struct sl_btmesh_evt_node_initialized_s *)&(evt->data);
 
-    if (pData->provisioned) {
-      CS_OUTPUT("node is provisioned. address:%x, ivi:%d\r\n", pData->address, pData->iv_index);
+          if (pData->provisioned) {
+            CS_OUTPUT("node is provisioned. address:%x, ivi:%d\r\n", pData->address, pData->iv_index);
 
-      primAddr = pData->address;
-      elemIndex = 0; // index of primary element is zero. This example has only one element.
-      provisioned = true;
-      switch_node_init();
-      // Initialize Low Power Node functionality
-      lpn_init();
-    } else {
-      CS_OUTPUT("node is unprovisioned\r\n");
+            primAddr = pData->address;
+            elemIndex = 0; // index of primary element is zero. This example has only one element.
+            provisioned = true;
+            switch_node_init();
+            // Initialize Low Power Node functionality
+            lpn_init();
+          } else {
+            CS_OUTPUT("node is unprovisioned\r\n");
 
-      CS_OUTPUT("starting unprovisioned beaconing...\r\n");
-      sl_btmesh_node_start_unprov_beaconing(0x3); // enable ADV and GATT provisioning bearer
-    }
-  }
-  break;
-  case sl_btmesh_evt_node_provisioned_id:
-    elemIndex = 0; // index of primary element is zero. This example has only one element.
-    primAddr = evt->data.evt_node_provisioned.address;
-    provisioned = true;
-    switch_node_init();
-    // try to initialize lpn after 30 seconds, if no configuration messages come
-    sc = sl_bt_system_set_soft_timer(TIMER_MS_2_TIMERTICK(30000),
-                                               TIMER_ID_NODE_CONFIGURED,
-                                               1);
-    if (sc) {
-      CS_OUTPUT("timer failure?!  %x\r\n", sc);
-    }
-    CS_OUTPUT("node provisioned, got address=%x\r\n", evt->data.evt_node_provisioned.address);
-    break;
-
-  case sl_btmesh_evt_node_provisioning_failed_id:
-    CS_ERROR("provisioning failed, code %x\r\n", evt->data.evt_node_provisioning_failed.result);
-    initiate_factory_reset(0);
-    break;
-
-  case sl_btmesh_evt_node_provisioning_started_id:
-    CS_OUTPUT("Started provisioning\r\n");
-    break;
-  case sl_btmesh_evt_node_key_added_id:
-    CS_OUTPUT("got new %s key with index %x\r\n", evt->data.evt_node_key_added.type == 0 ? "network" : "application",
-              evt->data.evt_node_key_added.index);
-
-    // try to init lpn 5 seconds after adding key
-    sc = sl_bt_system_set_soft_timer(TIMER_MS_2_TIMERTICK(5000),
-                                               TIMER_ID_NODE_CONFIGURED,
-                                               1);
-    if (sc) {
-      CS_OUTPUT("timer failure?!  %x\r\n", sc);
-    }
-    break;
-
-  case sl_btmesh_evt_node_model_config_changed_id:
-  {
-    CS_OUTPUT("model config changed\r\n");
-    // try to init lpn 5 seconds after configuration change
-    sc = sl_bt_system_set_soft_timer(TIMER_MS_2_TIMERTICK(5000),
-                                               TIMER_ID_NODE_CONFIGURED,
-                                               1);
-    if (sc) {
-      CS_OUTPUT("timer failure?!  %x\r\n", sc);
-    }
-  }
-  break;
-  case sl_btmesh_evt_node_reset_id:
-    CS_OUTPUT("evt sl_btmesh_evt_node_reset_id\r\n");
-    initiate_factory_reset(1);
-    break;
-  case sl_btmesh_evt_friend_friendship_established_id:
-    CS_OUTPUT("friendship established\r\n");
-    break;
-  #if 0 //TODO
-        case gecko_evt_mesh_lpn_friendship_failed_id:
-          CS_OUTPUT("friendship failed\r\n");
-          // try again in 2 seconds
-          sc = sl_bt_system_set_soft_timer(TIMER_MS_2_TIMERTICK(2000),
-                                                     TIMER_ID_FRIEND_FIND,
-                                                     1);
-          if (sc) {
-            CS_OUTPUT("timer failure?!  %x\r\n", sc);
+            CS_OUTPUT("starting unprovisioned beaconing...\r\n");
+            sl_btmesh_node_start_unprov_beaconing(0x3); // enable ADV and GATT provisioning bearer
           }
-          break;
-  #endif
-        case sl_btmesh_evt_friend_friendship_terminated_id:
-          CS_OUTPUT("friendship terminated\r\n");
-          if (num_connections == 0) {
-            // try again in 2 seconds
-            sc = sl_bt_system_set_soft_timer(TIMER_MS_2_TIMERTICK(2000),
-                                                       TIMER_ID_FRIEND_FIND,
-                                                       1);
-            if (sc) {
-              CS_OUTPUT("timer failure?!  %x\r\n", sc);
-            }
-          }
-          break;
-  default:
-    dbgPrint("Unhandled event [0x%08x]\n",
-             SL_BT_MSG_ID(evt->header));
-    break;
-  }
+        }
+        break;
+      case sl_btmesh_evt_node_provisioned_id:
+        elemIndex = 0; // index of primary element is zero. This example has only one element.
+        primAddr = evt->data.evt_node_provisioned.address;
+        provisioned = true;
+        switch_node_init();
+        // try to initialize lpn after 30 seconds, if no configuration messages come
+        sc = sl_bt_system_set_soft_timer(TIMER_MS_2_TIMERTICK(30000),
+                                                   TIMER_ID_NODE_CONFIGURED,
+                                                   1);
+        if (sc) {
+          CS_OUTPUT("timer failure?!  %x\r\n", sc);
+        }
+        CS_OUTPUT("node provisioned, got address=%x\r\n", evt->data.evt_node_provisioned.address);
+        break;
+
+      case sl_btmesh_evt_node_provisioning_failed_id:
+        CS_ERROR("provisioning failed, code %x\r\n", evt->data.evt_node_provisioning_failed.result);
+        initiate_factory_reset(0);
+        break;
+
+      case sl_btmesh_evt_node_provisioning_started_id:
+        CS_OUTPUT("Started provisioning\r\n");
+        break;
+      case sl_btmesh_evt_node_key_added_id:
+        CS_OUTPUT("got new %s key with index %x\r\n", evt->data.evt_node_key_added.type == 0 ? "network" : "application",
+                  evt->data.evt_node_key_added.index);
+
+        // try to init lpn 5 seconds after adding key
+        sc = sl_bt_system_set_soft_timer(TIMER_MS_2_TIMERTICK(5000),
+                                                   TIMER_ID_NODE_CONFIGURED,
+                                                   1);
+        if (sc) {
+          CS_OUTPUT("timer failure?!  %x\r\n", sc);
+        }
+        break;
+
+      case sl_btmesh_evt_node_model_config_changed_id:
+      {
+        CS_OUTPUT("model config changed\r\n");
+        // try to init lpn 5 seconds after configuration change
+        sc = sl_bt_system_set_soft_timer(TIMER_MS_2_TIMERTICK(5000),
+                                                   TIMER_ID_NODE_CONFIGURED,
+                                                   1);
+        if (sc) {
+          CS_OUTPUT("timer failure?!  %x\r\n", sc);
+        }
+      }
+      break;
+      case sl_btmesh_evt_node_reset_id:
+        CS_OUTPUT("evt sl_btmesh_evt_node_reset_id\r\n");
+        initiate_factory_reset(1);
+        break;
+      case sl_btmesh_evt_friend_friendship_established_id:
+        CS_OUTPUT("friendship established\r\n");
+        break;
+      #if 0 //TODO
+            case gecko_evt_mesh_lpn_friendship_failed_id:
+              CS_OUTPUT("friendship failed\r\n");
+              // try again in 2 seconds
+              sc = sl_bt_system_set_soft_timer(TIMER_MS_2_TIMERTICK(2000),
+                                                         TIMER_ID_FRIEND_FIND,
+                                                         1);
+              if (sc) {
+                CS_OUTPUT("timer failure?!  %x\r\n", sc);
+              }
+              break;
+      #endif
+            case sl_btmesh_evt_friend_friendship_terminated_id:
+              CS_OUTPUT("friendship terminated\r\n");
+              if (num_connections == 0) {
+                // try again in 2 seconds
+                sc = sl_bt_system_set_soft_timer(TIMER_MS_2_TIMERTICK(2000),
+                                                           TIMER_ID_FRIEND_FIND,
+                                                           1);
+                if (sc) {
+                  CS_OUTPUT("timer failure?!  %x\r\n", sc);
+                }
+              }
+              break;
+      default:
+        dbgPrint("Unhandled event [0x%08x]\n",
+                 SL_BT_MSG_ID(evt->header));
+        break;
+      }
 }
 
 static char **splitCmd(char *pIn, int *argc)
