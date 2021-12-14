@@ -109,8 +109,7 @@ static pthread_mutex_t syncFlagMetex = PTHREAD_MUTEX_INITIALIZER;
 static char commandBuf[MAX_BUF_NUM][CONSOLE_RX_BUF_SIZE];
 static int  bufReadOffset, bufWriteOffset;
 
-//static bool hostTargetSynchronized = false;
-static bool hostTargetSynchronized = true;
+static bool hostTargetSynchronized = false;
 static bool provisioned = false;
 static uint16_t primAddr = 0x0000;
 static uint16_t elemIndex = 0xFFFF;
@@ -386,7 +385,6 @@ static void appMainInit(void)
 {
   resetSwitchVariables();
 
-#if 0
   if (-1 == pthread_create(&synchronizeThreadId,
                            NULL,
                            pSyncThread,
@@ -394,7 +392,7 @@ static void appMainInit(void)
     perror("Error creating sync thread.\n");
     exit(1);
   }
-#endif
+
 }
 
 void *pConsoleThread(void *pIn)
@@ -415,7 +413,10 @@ void *pAppMainThread(void *pIn)
     execCMD();
     // Do not remove this call: Silicon Labs components process action routine
     // must be called from the super loop.
-    sl_system_process_action();
+    if (hostTargetSynchronized) {
+      // Process events if synchronized
+      sl_system_process_action();
+  }
 
   }
   return EXIT_SUCCESS;
@@ -431,7 +432,6 @@ static void *pSyncThread(void *pIn)
   do {
     CS_OUTPUT("."); fflush(stdout);
 
-    sl_system_process_action();
     sl_status_t sc = sl_bt_pop_event(&evt);
 
     if (sc == SL_STATUS_OK) {
@@ -468,6 +468,11 @@ static void *pSyncThread(void *pIn)
       sleep(1);
     }
 
+    if (hostTargetSynchronized) {
+      // exit loop / thread when synchronized
+      break;
+    }
+
   } while (1);
 
   pthread_exit(NULL);
@@ -493,7 +498,6 @@ static void initiate_factory_reset(int type)
 void sl_bt_on_event(sl_bt_msg_t *evt)
 {
   sl_status_t sc;
-
 
     switch (SL_BGAPI_MSG_ID(evt->header)) {
       case sl_bt_evt_system_boot_id:
@@ -1081,12 +1085,10 @@ static int onOffExec(int argc, const char *argv[])
     return 3;
   }
 
-#if 0
   if (!hostTargetSynchronized) {
     CS_ERROR("NCP host-target is not synchronized yet.\n");
     return 5;
   }
-#endif
 
   if (!provisioned) {
     CS_OUTPUT("Node is unprovisioned, need to be provisioned first.\n");
